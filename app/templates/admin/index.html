@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}系统管理{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>系统管理</h2>
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">用户管理</h5>
+                    <p class="card-text">管理系统用户，设置权限等。</p>
+                    <a href="{{ url_for('admin.users') }}" class="btn btn-primary">进入</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">班级管理</h5>
+                    <p class="card-text">管理学校班级信息。</p>
+                    <a href="{{ url_for('admin.classes') }}" class="btn btn-primary">进入</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">学生管理</h5>
+                    <p class="card-text">管理学生信息。</p>
+                    <a href="{{ url_for('admin.students') }}" class="btn btn-primary">进入</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

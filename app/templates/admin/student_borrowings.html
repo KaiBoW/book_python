@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}{{ student.name }}的借阅记录{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>{{ student.name }}的借阅记录</h2>
+            <p>学号：{{ student.student_id }} | 班级：{{ student.class_.name }}</p>
+        </div>
+        <div class="col text-end">
+            <a href="{{ url_for('admin.students') }}" class="btn btn-secondary">返回学生列表</a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>图书</th>
+                    <th>借阅日期</th>
+                    <th>应还日期</th>
+                    <th>归还日期</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for borrowing in borrowings %}
+                <tr>
+                    <td>{{ borrowing.id }}</td>
+                    <td>{{ borrowing.book.title }}</td>
+                    <td>{{ borrowing.borrow_date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ borrowing.due_date.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        {% if borrowing.return_date %}
+                            {{ borrowing.return_date.strftime('%Y-%m-%d') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if borrowing.status == 'borrowed' %}
+                            <span class="badge bg-primary">借阅中</span>
+                        {% elif borrowing.status == 'returned' %}
+                            <span class="badge bg-success">已归还</span>
+                        {% else %}
+                            <span class="badge bg-danger">逾期</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if pagination %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% for page in pagination.iter_pages() %}
+                {% if page %}
+                    <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('admin.student_borrowings', id=student.id, page=page) }}">{{ page }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %} 

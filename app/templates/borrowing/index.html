@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}借阅管理{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>借阅管理</h2>
+        </div>
+        <div class="col text-end">
+            <a href="{{ url_for('borrowing.add') }}" class="btn btn-primary">添加借阅</a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                {{ search_form.hidden_tag() }}
+                <div class="col-auto">
+                    {{ search_form.keyword(class="form-control", placeholder="搜索图书/学生") }}
+                </div>
+                <div class="col-auto">
+                    {{ search_form.status(class="form-select") }}
+                </div>
+                <div class="col-auto">
+                    {{ search_form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>图书</th>
+                    <th>学生</th>
+                    <th>借阅日期</th>
+                    <th>应还日期</th>
+                    <th>归还日期</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for borrowing in borrowings %}
+                <tr>
+                    <td>{{ borrowing.id }}</td>
+                    <td>{{ borrowing.book.title }}</td>
+                    <td>
+                        {{ borrowing.student.name }}
+                        <small class="text-muted">({{ borrowing.student.student_id }})</small>
+                    </td>
+                    <td>{{ borrowing.borrow_date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ borrowing.due_date.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        {% if borrowing.return_date %}
+                            {{ borrowing.return_date.strftime('%Y-%m-%d') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if borrowing.status == 'borrowed' %}
+                            <span class="badge bg-primary">借阅中</span>
+                        {% elif borrowing.status == 'returned' %}
+                            <span class="badge bg-success">已归还</span>
+                        {% else %}
+                            <span class="badge bg-danger">逾期</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if borrowing.status in ['borrowed', 'overdue'] %}
+                            <a href="{{ url_for('borrowing.return_book', id=borrowing.id) }}" 
+                               class="btn btn-sm btn-success"
+                               onclick="return confirm('确定要归还这本书吗？')">归还</a>
+                        {% endif %}
+                        {% if current_user.is_admin and borrowing.status == 'returned' %}
+                            <a href="{{ url_for('borrowing.delete', id=borrowing.id) }}" 
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('确定要删除这条记录吗？')">删除</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if pagination %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% for page in pagination.iter_pages() %}
+                {% if page %}
+                    <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('borrowing.index', page=page, keyword=request.args.get('keyword', ''), status=request.args.get('status', '')) }}">
+                            {{ page }}
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %} 

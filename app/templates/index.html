@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}首页{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">欢迎使用图书管理系统</h1>
+    <p class="lead">这是一个简单的图书管理系统，提供图书管理、借阅管理等功能。</p>
+    {% if not current_user.is_authenticated %}
+        <hr class="my-4">
+        <p>请先登录系统。</p>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('auth.login') }}" role="button">登录</a>
+    {% endif %}
+</div>
+
+{% if current_user.is_authenticated %}
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">图书管理</h5>
+                <p class="card-text">管理图书信息，包括添加、修改、删除图书等操作。</p>
+                <a href="{{ url_for('book.index') }}" class="btn btn-primary">进入</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">借阅管理</h5>
+                <p class="card-text">管理图书借阅信息，包括借书、还书等操作。</p>
+                <a href="{{ url_for('borrowing.index') }}" class="btn btn-primary">进入</a>
+            </div>
+        </div>
+    </div>
+    {% if current_user.is_admin %}
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">系统管理</h5>
+                <p class="card-text">管理用户、班级、学生等系统信息。</p>
+                <a href="{{ url_for('admin.index') }}" class="btn btn-primary">进入</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %} 

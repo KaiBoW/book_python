@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}学生管理{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>学生管理</h2>
+        </div>
+        <div class="col text-end">
+            <a href="{{ url_for('admin.add_student') }}" class="btn btn-primary">添加学生</a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>姓名</th>
+                    <th>学号</th>
+                    <th>班级</th>
+                    <th>借阅数量</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.id }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.student_id }}</td>
+                    <td>{{ student.class_.name }}</td>
+                    <td>
+                        <a href="{{ url_for('admin.student_borrowings', id=student.id) }}">
+                            {{ student.borrowings|length }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('admin.edit_student', id=student.id) }}" class="btn btn-sm btn-primary">编辑</a>
+                        <a href="{{ url_for('admin.delete_student', id=student.id) }}" 
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('确定要删除该学生吗？')">删除</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if pagination %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% for page in pagination.iter_pages() %}
+                {% if page %}
+                    <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('admin.students', page=page) }}">{{ page }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %} 

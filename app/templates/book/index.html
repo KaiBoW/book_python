@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}图书管理{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>图书管理</h2>
+        </div>
+        {% if current_user.is_admin %}
+        <div class="col text-end">
+            <a href="{{ url_for('book.add') }}" class="btn btn-primary">添加图书</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                {{ search_form.hidden_tag() }}
+                <div class="col-auto">
+                    {{ search_form.keyword(class="form-control", placeholder="搜索书名/作者/ISBN") }}
+                </div>
+                <div class="col-auto">
+                    {{ search_form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>书名</th>
+                    <th>作者</th>
+                    <th>ISBN</th>
+                    <th>总数量</th>
+                    <th>可借数量</th>
+                    <th>分类</th>
+                    <th>位置</th>
+                    {% if current_user.is_admin %}
+                    <th>操作</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td>{{ book.id }}</td>
+                    <td>{{ book.title }}</td>
+                    <td>{{ book.author }}</td>
+                    <td>{{ book.isbn }}</td>
+                    <td>{{ book.total_copies }}</td>
+                    <td>{{ book.available_copies }}</td>
+                    <td>{{ book.category or '-' }}</td>
+                    <td>{{ book.location or '-' }}</td>
+                    {% if current_user.is_admin %}
+                    <td>
+                        <a href="{{ url_for('book.edit', id=book.id) }}" class="btn btn-sm btn-primary">编辑</a>
+                        <a href="{{ url_for('book.delete', id=book.id) }}" class="btn btn-sm btn-danger" 
+                           onclick="return confirm('确定要删除这本书吗？')">删除</a>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if pagination %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% for page in pagination.iter_pages() %}
+                {% if page %}
+                    <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('book.index', page=page, keyword=request.args.get('keyword', '')) }}">
+                            {{ page }}
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %} 
